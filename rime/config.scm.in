@@ -1,0 +1,25 @@
+(define-module (rime config)
+  #:export (%librime
+            %rime-shared-data-dir
+            %guile-rime-version
+            %guile-rime-package-name
+            %guile-rime-home-page-url
+            %guile-rime-bug-report-address))
+
+(define %librime
+  "@RIME_LIBDIR@/librime")
+
+(define %rime-shared-data-dir
+  "@RIME_DATA@")
+
+(define %guile-rime-package-name
+  "@PACKAGE_NAME@")
+
+(define %guile-rime-version
+  "@PACKAGE_VERSION@")
+
+(define %guile-rime-bug-report-address
+  "@PACKAGE_BUGREPORT@")
+
+(define %guile-rime-home-page-url
+  "@PACKAGE_URL@")

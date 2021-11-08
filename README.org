@@ -1,0 +1,5 @@
+-*- mode: org; coding: utf-8; -*-
+
+#+TITLE: README for Guile-Rime
+
+guile ffi of rime 
