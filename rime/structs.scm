@@ -28,12 +28,10 @@
   #:use-module (srfi srfi-26)
   #:use-module (rime utils)
   #:export (finalize
-            free-status
             set-caret-pos
             get-current-schema
             get-schema-list
             get-shared-data-dir
-            get-status
             get-user-data-dir
             get-user-id
             get-version
@@ -54,15 +52,6 @@
             ;; set-traits-shared-data-dir!
             setup
             start-maintenance
-            status-is-ascii-mode
-            status-is-ascii-punct
-            status-is-composing
-            status-is-disabled
-            status-is-full-shape
-            status-is-simplified
-            status-is-traditional
-            status-schema-id
-            status-schema-name
             get-prebuilt-data-dir
             get-staging-dir
             deploy-config-file
@@ -81,65 +70,6 @@
             get-sync-dir))
 
 (define get-api-funcation %guile-rime-get-api-funcation)
-
-
-
-(define %status (bs:struct `((data-size ,int)
-                             (schema-id ,char*)
-                             (schema-name ,char*)
-                             (is-disabled ,bool)
-                             (is-composing ,bool)
-                             (is-ascii-mode ,bool)
-                             (is-full-shape ,bool)
-                             (is-simplified ,bool)
-                             (is-traditional ,bool)
-                             (is-ascii-punct ,bool))))
-
-(define-record-type <status>
-  (%make-status bytestructure)
-  status?
-  (bytestructure status-bytestructure))
-
-(define (make-status-bytestructure)
-  (struct-init %make-status %status))
-
-(define (status->point status)
-  (bytestructure->pointer (status-bytestructure status)))
-
-(define (status-schema-id status)
-  (make-pointer->string (bytestructure-ref
-                         (status-bytestructure status)
-                         'schema-id)))
-
-(define (status-schema-name status)
-  (make-pointer->string (bytestructure-ref
-                         (status-bytestructure status)
-                         'schema-name)))
-
-(define (status-is-disabled status)
-  (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-disabled)))
-
-(define (status-is-composing status)
-  (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-composing)))
-
-(define (status-is-ascii-mode status)
-  (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-ascii-mode)))
-
-(define (status-is-full-shape status)
-  (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-full-shape)))
-
-(define (status-is-simplified status)
-  (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-simplified)))
-
-(define (status-is-traditional status)
-  (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-traditional)))
-
-(define (status-is-ascii-punct status)
-  (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-ascii-punct)))
-
-
-
-
 
 (define %schema-list-item
   (bs:struct
@@ -359,25 +289,6 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
 
 (define (process-key session-id keycode mask)
   (c-int->bool (%process-key session-id keycode mask)))
-
-;;; output
-
-
-
-
-
-(define %get-status
-  (get-api-funcation 'get-status ffi:int (list ffi:uintptr_t '*)))
-
-(define* (get-status session-id #:optional
-                     (status (make-status-bytestructure)))
-  (%get-status session-id (status->point status))
-  status)
-
-(define %free-status
-  (get-api-funcation 'free-status ffi:int '(*)))
-(define (free-status status)
-  (%free-status (status->point status)))
 
 ;;; runtime options
 

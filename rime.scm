@@ -12,6 +12,7 @@
         (rime config)
         (rime composition)
         (rime session)
+        (rime status)
         (rime api)))
 
     (let* ((current-module (current-module))

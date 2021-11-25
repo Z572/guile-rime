@@ -50,6 +50,7 @@ SOURCES = rime.scm                  \
   rime/traits.scm                   \
   rime/session.scm                  \
   rime/api.scm                      \
+  rime/status.scm                   \
   rime/structs.scm                  \
   rime/utils.scm
 
