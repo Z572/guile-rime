@@ -1,4 +1,4 @@
-(define-module (rime config)
+(define-module (rime configuration)
   #:export (%librime
             %rime-shared-data-dir
             %guile-rime-version

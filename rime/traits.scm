@@ -1,5 +1,5 @@
 (define-module (rime traits)
-  #:use-module (rime config)
+  #:use-module (rime configuration)
   #:use-module (bytestructures guile)
   #:use-module (srfi srfi-9)
   #:use-module (rime utils)

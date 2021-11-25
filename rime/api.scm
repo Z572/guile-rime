@@ -1,5 +1,5 @@
 (define-module (rime api)
-  #:use-module (rime config)
+  #:use-module (rime configuration)
   #:use-module (rime utils)
   #:use-module (bytestructures guile)
   #:use-module (rnrs bytevectors)

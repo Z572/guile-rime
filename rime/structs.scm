@@ -1,5 +1,5 @@
 (define-module (rime structs)
-  #:use-module (rime config)
+  #:use-module (rime configuration)
   #:use-module (rime traits)
   #:use-module (rime api)
   #:use-module (bytestructures guile)
