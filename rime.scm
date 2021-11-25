@@ -6,6 +6,7 @@
       '((rime candidate)
         (rime structs)
         (rime traits)
+        (rime menu)
         (rime config)
         (rime composition)
         (rime session)
