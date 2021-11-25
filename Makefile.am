@@ -40,6 +40,7 @@ SUFFIXES = .scm .go
 
 SOURCES = rime.scm                  \
   rime/configuration.scm            \
+  rime/config.scm            \
   rime/levers-api.scm               \
   rime/traits.scm                   \
   rime/session.scm                  \

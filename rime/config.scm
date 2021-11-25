@@ -1,0 +1,321 @@
+(define-module (rime config)
+  #:use-module (rime api)
+  #:use-module (rime utils)
+  #:use-module (srfi srfi-9)
+  #:use-module (bytestructures guile)
+  #:use-module (rnrs bytevectors)
+  #:use-module ((system foreign) #:select (pointer->string
+                                           string->pointer
+                                           void
+                                           (int . ffi:int)
+                                           (double . ffi:double)
+                                           (size_t . ffi:size_t)))
+  #:export (config->pointer
+            config-iterator?
+            config-iterator->pointer
+            config-open
+            config-close
+            config-get-bool
+            config-get-int
+            config-get-double
+            config-get-string
+            config-get-cstring
+            config-update-signature
+            config-begin-map
+            config-next
+            config-end
+            user-config-open
+            config-init
+            config-load-string
+            config-set-bool
+            config-set-int
+            config-set-double
+            config-set-string
+            config-get-item
+            config-set-item
+            config-clear
+            config-create-list
+            config-create-map
+            config-list-size
+            config-begin-list))
+
+(define get-api-funcation %guile-rime-get-api-funcation)
+
+(define %config
+  (bs:struct
+   `((ptr ,(bs:pointer void)))))
+
+(define-record-type <config>
+  (%make-config bytestructure)
+  config?
+  (bytestructure config-bytestructure))
+
+(define (make-config-bytestructure)
+  (%make-config (bytestructure %config)))
+
+(define (config->pointer config)
+  (bytestructure->pointer (config-bytestructure config)))
+
+(define (config-ptr config)
+  (bytestructure-ref
+   (config-bytestructure config)
+   'ptr))
+
+(define %config-iterator
+  (bs:struct
+   `((list ,(bs:pointer void))
+     (map ,(bs:pointer void))
+     (index ,int)
+     (key ,char*)
+     (path ,char*))))
+
+(define-record-type <config-iterator>
+  (%make-config-iterator bytestructure)
+  config-iterator?
+  (bytestructure config-iterator-bytestructure))
+
+(define (config-iterator->pointer config-iterator)
+  (bytestructure->pointer
+   (config-iterator-bytestructure
+    config-iterator)))
+(define %config-open
+  (get-api-funcation 'config-open ffi:int '(* *)))
+
+(define* (config-open config-id #:optional (config (make-config-bytestructure)))
+  (%config-open (string->pointer config-id) (config->pointer config))
+  config)
+
+(define %config-close
+  (get-api-funcation
+   'config-close ffi:int
+   (list '*)))
+
+(define (config-close config)
+  (%config-close (config->pointer config)))
+
+(define %config-get-bool
+  (get-api-funcation
+   'config-get-bool ffi:int
+   (list '* '* ffi:int)))
+
+(define (config-get-bool config key value)
+  (%config-get-bool (config->pointer config)
+                    (string->pointer key)
+                    value))
+
+(define %config-get-int
+  (get-api-funcation
+   'config-get-int ffi:int
+   (list '* '* ffi:int)))
+
+(define (config-get-int config key value)
+  (%config-get-int (config->pointer config) (string->pointer key) value))
+
+(define %config-get-double
+  (get-api-funcation
+   'config-get-double
+   ffi:int
+   (list '* '* ffi:double)))
+
+(define (config-get-double config key value)
+  (%config-get-double (config->pointer config) (string->pointer key) value))
+
+(define %config-get-string
+  (get-api-funcation
+   'config-get-string
+   ffi:int
+   (list '* '* ffi:int ffi:size_t)))
+
+(define* (config-get-string config key #:optional (value (bs:pointer int)) (buffer-size 100))
+  (%config-get-string
+   (config->pointer config)
+   (string->pointer key)
+   value buffer-size)
+  value)
+
+(define %config-get-cstring
+  (get-api-funcation
+   'config-get-cstring
+   '*
+   (list '* '* )))
+
+(define (config-get-cstring config key)
+  (let ((ptr (%config-get-cstring
+              (config->pointer config)
+              (string->pointer key))))
+    (make-pointer->string
+     (string->number
+      (pointer->string ptr)))))
+
+(define %config-update-signature
+  (get-api-funcation
+   'config-update-signature ffi:int
+   (list '* '*)))
+
+(define (config-update-signature config key)
+  (%config-update-signature
+   (config->pointer config)
+   (string->pointer key)))
+
+(define %config-begin-map
+  (get-api-funcation
+   'config-begin-map ffi:int
+   (list '* '* '*)))
+
+(define (config-begin-map iterator config key)
+  (%config-begin-map (config-iterator->pointer iterator)
+                     (config->pointer config)
+                     (string->pointer key)))
+
+(define %config-next
+  (get-api-funcation
+   'config-next ffi:int
+   (list '*)))
+
+(define (config-next iterator)
+  (%config-next (config-iterator->pointer iterator)))
+
+(define %config-end
+  (get-api-funcation
+   'config-end ffi:int
+   (list '*)))
+
+(define (config-end iterator)
+  (%config-end (config-iterator->pointer iterator)))
+
+(define %user-config-open
+  (get-api-funcation
+   'user-config-open
+   ffi:int
+   (list '* '*)))
+
+(define* (user-config-open config-id #:optional
+                           (config (make-config-bytestructure)))
+  (and (c-int->bool
+        (%user-config-open
+         (string->pointer config-id)
+         (config->pointer config)))
+       config))
+(define %config-init
+  (get-api-funcation 'config-init ffi:int '(*)))
+
+(define (config-init config)
+  (%config-init (config->pointer config))
+  config)
+
+(define %config-load-string
+  (get-api-funcation
+   'config-load-string ffi:int '(* *)))
+
+(define (config-load-string config yaml)
+  (%config-load-string
+   (config->pointer config)
+   (string->pointer yaml)))
+
+(define %config-set-bool
+  (get-api-funcation
+   'config-set-bool
+   ffi:int
+   (list '* '* ffi:int)))
+
+(define (config-set-bool config key value)
+  (%config-set-bool
+   (config->pointer config)
+   (string->pointer key)
+   (bool->c-int value)))
+
+(define %config-set-int
+  (get-api-funcation
+   'config-set-int
+   ffi:int
+   (list '* '* ffi:int)))
+
+(define (config-set-int config key value)
+  (%config-set-int
+   (config->pointer config)
+   (string->pointer key)
+   value))
+
+(define %config-set-double
+  (get-api-funcation
+   'config-set-double
+   ffi:int
+   (list '* '* ffi:double)))
+
+(define (config-set-double config key value)
+  (%config-set-double (config->pointer config) (string->pointer key) value))
+
+(define %config-set-string
+  (get-api-funcation
+   'config-set-string
+   ffi:int
+   (list '* '* '*)))
+
+(define (config-set-string config key value)
+  (%config-set-string (config->pointer config)
+                      (string->pointer key)
+                      (string->pointer value)))
+
+(define %config-get-item
+  (get-api-funcation
+   'config-get-item
+   ffi:int
+   (list '* '* '*)))
+
+(define (config-get-item config key value)
+  (%config-get-item
+   (config->pointer config)
+   (string->pointer key)
+   (config->pointer value)))
+
+(define %config-set-item
+  (get-api-funcation
+   'config-set-item
+   ffi:int (list '* '* '*)))
+
+(define (config-set-item config key value)
+  (%config-set-item
+   (config->pointer config)
+   (string->pointer key)
+   (config->pointer value)))
+
+(define %config-clear
+  (get-api-funcation
+   'config-clear
+   ffi:int '(* *)))
+
+(define (config-clear config key)
+  (%config-clear
+   (config->pointer config)
+   (string->pointer key)))
+
+(define %config-create-list
+  (get-api-funcation
+   'config-create-list ffi:int '(* *)))
+
+(define (config-create-list config key)
+  (%config-create-list (config->pointer config) (string->pointer key)))
+
+(define %config-create-map
+  (get-api-funcation
+   'config-create-map ffi:int '(* *)))
+
+(define (config-create-map config key)
+  (%config-create-map (config->pointer config) (string->pointer key)))
+
+(define %config-list-size
+  (get-api-funcation
+   'config-list-size ffi:size_t '(* *)))
+
+(define (config-list-size config key)
+  (%config-list-size (config->pointer config) (string->pointer key)))
+
+(define %config-begin-list
+  (get-api-funcation
+   'config-begin-list ffi:int '(* * *)))
+
+(define (config-begin-list iterator config key)
+  (%config-begin-list
+   (config-iterator->pointer iterator)
+   (config->pointer config)
+   (string->pointer key)))
