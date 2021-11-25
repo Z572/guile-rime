@@ -43,6 +43,7 @@ SOURCES = rime.scm                  \
   rime/configuration.scm            \
   rime/composition.scm              \
   rime/config.scm                   \
+  rime/commit.scm                   \
   rime/menu.scm                     \
   rime/levers-api.scm               \
   rime/traits.scm                   \

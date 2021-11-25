@@ -7,6 +7,7 @@
         (rime structs)
         (rime traits)
         (rime menu)
+        (rime commit)
         (rime config)
         (rime composition)
         (rime session)

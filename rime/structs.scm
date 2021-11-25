@@ -28,16 +28,13 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (rime utils)
-  #:export (commit-text
-            context-commit-text-preview
+  #:export (context-commit-text-preview
             context-composition
             context-menu
             context-select-labels
             finalize
-            free-commit
             free-status
             set-caret-pos
-            get-commit
             get-context
             get-current-schema
             get-schema-list
@@ -91,25 +88,6 @@
             get-sync-dir))
 
 (define get-api-funcation %guile-rime-get-api-funcation)
-
-(define %commit (bs:struct `((data-size ,int)
-                             (text ,char*))))
-
-(define-record-type <commit>
-  (%make-commit bytestructure)
-  commit?
-  (bytestructure commit-bytestructure))
-
-(define (make-commit-bytestructure)
-  (struct-init %make-commit %commit))
-
-(define (commit->pointer commit)
-  (bytestructure->pointer (commit-bytestructure commit)))
-
-(define (commit-text commit)
-  (make-pointer->string (bytestructure-ref
-                         (commit-bytestructure commit)
-                         'text)))
 
 (define %context (bs:struct `((data-size ,int)
                               (composition ,%composition)
@@ -432,24 +410,6 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
   (c-int->bool (%process-key session-id keycode mask)))
 
 ;;; output
-
-(define %get-commit
-  (get-api-funcation
-   'get-commit
-   ffi:int (list ffi:uintptr_t '*)))
-
-(define* (get-commit session-id #:optional (commit (make-commit-bytestructure)))
-  (%get-commit session-id (commit->pointer commit))
-  commit)
-
-(define %free-commit
-  (get-api-funcation
-   'free-commit
-   ffi:int
-   (list  '*)))
-
-(define (free-commit commit)
-  (%free-commit (commit->pointer commit)))
 
 (define %get-context
   (get-api-funcation 'get-context ffi:int (list ffi:uintptr_t '*)))
