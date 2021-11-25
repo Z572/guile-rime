@@ -4,7 +4,8 @@
   (begin
     (define %public-modules
       '((rime structs)
-        (rime traits)))
+        (rime traits)
+        (rime api)))
 
     (let* ((current-module (current-module))
            (current-module-interface (resolve-interface (module-name current-module))))

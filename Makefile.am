@@ -43,6 +43,7 @@ SOURCES = rime.scm                  \
   rime/levers-api.scm               \
   rime/main.scm                     \
   rime/traits.scm                  \
+  rime/api.scm                  \
   rime/structs.scm                  \
   rime/utils.scm
 
