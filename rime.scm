@@ -5,6 +5,7 @@
     (define %public-modules
       '((rime structs)
         (rime traits)
+        (rime session)
         (rime api)))
 
     (let* ((current-module (current-module))
