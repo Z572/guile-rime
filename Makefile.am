@@ -53,6 +53,7 @@ SOURCES = rime.scm                  \
   rime/schema.scm                   \
   rime/status.scm                   \
   rime/structs.scm                  \
+  rime/module.scm                   \
   rime/utils.scm
 
 TESTS = 

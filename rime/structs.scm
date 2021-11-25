@@ -52,69 +52,13 @@
             get-user-data-sync-dir
             simulate-key-sequence
             set-option
-            find-module
             get-input
             get-caret-pot
             deployer-initialize
-            module-get-api
-            module-module-name
-            module-initialize
-            module-finalize
             run-task
             get-sync-dir))
 
 (define get-api-funcation %guile-rime-get-api-funcation)
-
-
-
-(define %custom-api
-  (bs:struct
-   `((data-size ,int))))
-
-(define-record-type <custom-api>
-  (%make-custom-api bytestructure)
-  custom-api?
-  (bytestructure custom-api-bytestructure))
-
-(define %module
-  (bs:struct
-   `((data-size ,int)
-     (module-name ,char*)
-     (initialize ,(bs:pointer void))
-     (finalize ,(bs:pointer void))
-     (get-api ,(bs:pointer '*);; %custom-api
-              ))))
-
-(define-record-type <module>
-  (%make-module bytestructure)
-  module-handler?
-  (bytestructure module-bytestructure))
-
-(define (make-module-bytestructure)
-  (struct-init %make-module %module))
-
-(define (module->pointer module)
-  (bytestructure->pointer
-   (module-bytestructure module)))
-
-(define (pointer->module pointer)
-  (%make-module
-   (pointer->bytestructure pointer %module)))
-
-(define (module-get-api module)
-  (let ((p (pointer->procedure
-            '* (make-pointer (bytestructure-ref
-                              (module-bytestructure module)
-                              'get-api)) '())))
-    (p)))
-(define (module-module-name module)
-  (make-pointer->string (bytestructure-ref (module-bytestructure module) 'module-name)))
-
-(define (module-initialize module)
-  (pointer->procedure void (make-pointer (bytestructure-ref (module-bytestructure module) 'initialize)) '()))
-
-(define (module-finalize module)
-  (pointer->procedure void (make-pointer (bytestructure-ref (module-bytestructure module) 'finalize)) '()))
 
 (define %setup (get-api-funcation 'setup void '(*)))
 
@@ -269,18 +213,6 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
    session-id (string->pointer key-sequence)))
 
 ;;; module
-
-(define %register-module
-  (get-api-funcation 'register-module ffi:int '(*)))
-
-(define (register-module module)
-  (%register-module (module->pointer module)))
-
-(define %find-module
-  (get-api-funcation 'find-module '* '(*)))
-
-(define (find-module module-name)
-  (pointer->module (%find-module (string->pointer module-name))))
 
 (define %run-task
   (get-api-funcation 'run-task ffi:int '(*)))

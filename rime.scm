@@ -14,6 +14,7 @@
         (rime schema)
         (rime session)
         (rime status)
+        (rime module)
         (rime api)))
 
     (let* ((current-module (current-module))

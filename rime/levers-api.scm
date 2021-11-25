@@ -1,6 +1,7 @@
 (define-module (rime levers-api)
   #:use-module (rime configuration)
   #:use-module (rime structs)
+  #:use-module (rime module)
   #:use-module (bytestructures guile)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
