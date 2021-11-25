@@ -3,7 +3,8 @@
 (eval-when (eval load compile)
   (begin
     (define %public-modules
-      '((rime structs)
+      '((rime candidate)
+        (rime structs)
         (rime traits)
         (rime config)
         (rime composition)
