@@ -11,6 +11,7 @@
         (rime context)
         (rime config)
         (rime composition)
+        (rime schema)
         (rime session)
         (rime status)
         (rime api)))
