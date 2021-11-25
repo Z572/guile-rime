@@ -42,6 +42,7 @@ SOURCES = rime.scm                  \
   rime/candidate.scm                \
   rime/configuration.scm            \
   rime/composition.scm              \
+  rime/context.scm                  \
   rime/config.scm                   \
   rime/commit.scm                   \
   rime/menu.scm                     \

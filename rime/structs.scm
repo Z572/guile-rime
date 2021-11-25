@@ -2,7 +2,6 @@
   #:use-module (rime configuration)
   #:use-module (rime traits)
   #:use-module (rime menu)
-  #:use-module (rime composition)
   #:use-module (rime config)
   #:use-module (rime api)
   #:use-module (bytestructures guile)
@@ -28,14 +27,9 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (rime utils)
-  #:export (context-commit-text-preview
-            context-composition
-            context-menu
-            context-select-labels
-            finalize
+  #:export (finalize
             free-status
             set-caret-pos
-            get-context
             get-current-schema
             get-schema-list
             get-shared-data-dir
@@ -59,7 +53,6 @@
             ;; set-traits-log-dir!
             ;; set-traits-shared-data-dir!
             setup
-            free-context
             start-maintenance
             status-is-ascii-mode
             status-is-ascii-punct
@@ -89,49 +82,7 @@
 
 (define get-api-funcation %guile-rime-get-api-funcation)
 
-(define %context (bs:struct `((data-size ,int)
-                              (composition ,%composition)
-                              (menu ,%menu)
-                              (commit-text-preview ,char*)
-                              (select-labels ,(bs:pointer '*;; char*
-                                                          )))))
 
-(define-record-type <context>
-  (%make-context bytestructure)
-  context?
-  (bytestructure context-bytestructure))
-
-(define (make-context-bytestructure)
-  (struct-init %make-context %context))
-
-(define (context->pointer context)
-  (bytestructure->pointer (context-bytestructure context)))
-
-(define (context-composition context)
-  (%make-composition (bytestructure-ref (context-bytestructure context) 'composition)))
-
-(define (context-select-labels context)
-  ;; (bytestructure-ref (context-bytestructure context)
-  ;;                    'select-labels)
-  (let*  ((select-labels (bytestructure-ref (context-bytestructure context)
-                                            'select-labels))
-          ;; (menu (context-menu context))
-          )
-    select-labels
-    ;; (if (= 0 select-labels)
-    ;;     (menu-select-keys menu)
-    ;;     (pk 'vvv "hhh"))
-    )
-  ;; (make-pointer->string (bytestructure-ref (pointer->bytestructure
-  ;;                                           (make-pointer sdlkfj)
-  ;;                                           (bs:vector (menu-page-size (context-menu context)) char* )) 1))
-  )
-
-(define (context-menu context)
-  (%make-menu (bytestructure-ref (context-bytestructure context) 'menu)))
-
-(define (context-commit-text-preview context)
-  (make-pointer->string (bytestructure-ref (context-bytestructure context) 'commit-text-preview)))
 
 (define %status (bs:struct `((data-size ,int)
                              (schema-id ,char*)
@@ -411,19 +362,9 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
 
 ;;; output
 
-(define %get-context
-  (get-api-funcation 'get-context ffi:int (list ffi:uintptr_t '*)))
 
-(define* (get-context session #:optional
-                      (context (make-context-bytestructure)))
-  (%get-context session (context->pointer context))
-  context)
 
-(define %free-context
-  (get-api-funcation 'free-context ffi:int '(*)))
 
-(define (free-context context)
-  (%free-context (context->pointer context)))
 
 (define %get-status
   (get-api-funcation 'get-status ffi:int (list ffi:uintptr_t '*)))

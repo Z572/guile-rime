@@ -8,6 +8,7 @@
         (rime traits)
         (rime menu)
         (rime commit)
+        (rime context)
         (rime config)
         (rime composition)
         (rime session)
