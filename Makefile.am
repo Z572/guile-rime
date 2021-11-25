@@ -49,6 +49,7 @@ SOURCES = rime.scm                  \
   rime/levers-api.scm               \
   rime/traits.scm                   \
   rime/session.scm                  \
+  rime/info.scm                     \
   rime/api.scm                      \
   rime/schema.scm                   \
   rime/status.scm                   \

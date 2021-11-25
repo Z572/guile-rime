@@ -29,10 +29,6 @@
   #:use-module (rime utils)
   #:export (finalize
             set-caret-pos
-            get-shared-data-dir
-            get-user-data-dir
-            get-user-id
-            get-version
             initialize
             is-maintenance-mode
             join-maintenance-thread
@@ -40,23 +36,15 @@
             custom-api-bytestructure
             process-key
             set-notification-handler
-            ;; set-traits-app-name!
-            ;; set-traits-distribution-name!
-            ;; set-traits-log-dir!
-            ;; set-traits-shared-data-dir!
             setup
             start-maintenance
-            get-prebuilt-data-dir
-            get-staging-dir
             deploy-config-file
-            get-user-data-sync-dir
             simulate-key-sequence
             set-option
             get-input
             get-caret-pot
             deployer-initialize
-            run-task
-            get-sync-dir))
+            run-task))
 
 (define get-api-funcation %guile-rime-get-api-funcation)
 
@@ -219,39 +207,7 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
 (define (run-task task-name)
   (%run-task (string->pointer task-name)))
 
-(define %get-shared-data-dir
-  (get-api-funcation 'get-shared-data-dir '* '()))
 
-(define (get-shared-data-dir)
-  (pointer->string (%get-shared-data-dir)))
-
-(define %get-user-data-dir
-  (get-api-funcation 'get-user-data-dir '* '()))
-
-(define (get-user-data-dir)
-  (pointer->string (%get-user-data-dir)))
-
-(define %get-sync-dir
-  (get-api-funcation 'get-sync-dir '* '()))
-
-(define (get-sync-dir)
-  (pointer->string (%get-sync-dir)))
-
-(define %get-user-id
-  (get-api-funcation 'get-user-id '* '()))
-
-(define (get-user-id)
-  (pointer->string (%get-user-id)))
-
-(define %get-user-data-sync-dir
-  (get-api-funcation 'get-user-data-sync-dir void (list '* ffi:size_t)))
-
-(define* (get-user-data-sync-dir
-          #:optional
-          (dir (bytestructure (bs:string 250 'utf8)))
-          (buffer-size (bytestructure-size dir)))
-  (%get-user-data-sync-dir (bytestructure->pointer dir) buffer-size)
-  (bytestructure-ref dir))
 
 ;;; initialize an empty config object
 
@@ -273,30 +229,8 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
 (define (get-caret-pot session-id)
   (%get-caret-pot session-id))
 
-(define %get-version
-  (get-api-funcation 'get-version '* '()))
-
-(define (get-version)
-  (pointer->string (%get-version)))
-
 (define %set-caret-pos
   (get-api-funcation 'set-caret-pos void (list ffi:uintptr_t ffi:size_t)))
 
 (define (set-caret-pos session-id caret-pos)
   (%set-caret-pos session-id caret-pos))
-
-(define %get-prebuilt-data-dir
-  (get-api-funcation
-   'get-prebuilt-data-dir
-   '* '()))
-
-(define (get-prebuilt-data-dir)
-  (pointer->string (%get-prebuilt-data-dir)))
-
-(define %get-staging-dir
-  (get-api-funcation
-   'get-staging-dir
-   '* '()))
-
-(define (get-staging-dir)
-  (pointer->string (%get-staging-dir)))
