@@ -1,5 +1,6 @@
 (define-module (rime structs)
   #:use-module (rime config)
+  #:use-module (rime traits)
   #:use-module (bytestructures guile)
   #:use-module (rnrs bytevectors)
   #:use-module ((system foreign) #:select (null-pointer?
@@ -110,7 +111,6 @@
             select-candidate-on-current-page
             set-option
             find-module
-            make-traits
             get-input
             get-caret-pot
             deployer-initialize
@@ -139,97 +139,6 @@
       (lambda _
         (throw 'system-error name  "~A" (list (strerror ENOSYS))
                (list ENOSYS))))))
-
-(define %traits
-  (bs:struct
-   `((data-size ,int)
-     (shared-data-dir ,char*)
-     (user-data-dir ,char*)
-     (distribution-name ,char*)
-     (distribution-code-name ,char*)
-     (distribution-version ,char*)
-     (app-name ,char*)
-     (modules ,(bs:pointer char*))
-     (min-log-level ,int)
-     (log-dir ,char*)
-     (prebuilt-data-dir ,char*)
-     (staging-dir ,char*))))
-
-(define-record-type <traits>
-  (%make-traits bytestructure)
-  traits?
-  (bytestructure traits-bytestructure))
-
-(define* (make-traits #:key
-                      (shared-data-dir %rime-shared-data-dir)
-                      user-data-dir;; ( ".";; (getenv(getenv "HOME"))
-                      ;;   )
-                      ;;(log-dir "/tmp")
-                      (app-name "rime.guile")
-                      (distribution-name "Grime")
-                      (distribution-code-name %guile-rime-package-name)
-                      (distribution-version %guile-rime-version))
-  (apply struct-init %make-traits %traits
-         `((shared-data-dir ,(string->pointer-address shared-data-dir))
-           (user-data-dir ,(string->pointer-address user-data-dir))
-           ;;(log-dir ,(string->pointer-address log-dir))
-           (app-name ,(string->pointer-address app-name))
-           (distribution-name ,(string->pointer-address distribution-name))
-           (distribution-code-name ,(string->pointer-address  distribution-code-name))
-           (distribution-version ,(string->pointer-address  distribution-version)))))
-
-(define (traits->pointer traits)
-  (bytestructure->pointer (traits-bytestructure traits)))
-
-;; (define (set-traits-app-name! traits app-name)
-;;   (bytestructure-set!
-;;    (traits-bytestructure traits)
-;;    'app-name
-;;    (string->pointer-address
-;;     app-name)))
-
-;; (define (set-traits-shared-data-dir! traits path)
-;;   (bytestructure-set!
-;;    (traits-bytestructure traits)
-;;    'shared-data-dir (string->pointer-address path)))
-
-;; (define (set-traits-user-data-dir! traits path)
-;;   (bytestructure-set!
-;;    (traits-bytestructure traits)
-;;    'user-data-dir (string->pointer-address path)))
-
-;; (define (set-traits-log-dir! traits log-dir)
-;;   (bytestructure-set!
-;;    (traits-bytestructure traits)
-;;    'log-dir (string->pointer-address log-dir )))
-
-;; (define (set-traits-distribution-name! traits distribution-name)
-;;   (bytestructure-set!
-;;    (traits-bytestructure traits)
-;;    'distribution-name (string->pointer-address distribution-name)))
-
-(define (traits-data-size traits)
-  (bytestructure-ref
-   (traits-bytestructure traits)
-   'data-size))
-
-(define (traits-shared-data-dir traits)
-  (make-pointer->string
-   (bytestructure-ref
-    (traits-bytestructure traits)
-    'shared-data-dir)))
-
-(define (traits-app-name traits)
-  (make-pointer->string
-   (bytestructure-ref
-    (traits-bytestructure traits)
-    'app-name)))
-
-(define (traits-log-dir traits)
-  (bytestructure-ref (traits-bytestructure traits) 'log-dir))
-
-(define (traits-modules traits)
-  (bytestructure-ref (traits-bytestructure traits) 'modules))
 
 (define %composition
   (bs:struct `((length ,int)

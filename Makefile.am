@@ -42,8 +42,8 @@ SOURCES = rime.scm                  \
   rime/config.scm                   \
   rime/levers-api.scm               \
   rime/main.scm                     \
+  rime/traits.scm                  \
   rime/structs.scm                  \
-  rime/types.scm                    \
   rime/utils.scm
 
 TESTS = 

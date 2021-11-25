@@ -4,9 +4,8 @@
 (use-modules ;; (rime main)
  (ncurses curses)
  (ncurses menu)
- (rime config)
+ (rime)
  (ice-9 match)
- (rime structs)
  (srfi srfi-1)
  (srfi srfi-26))
 
