@@ -6,6 +6,7 @@
       '((rime structs)
         (rime traits)
         (rime config)
+        (rime composition)
         (rime session)
         (rime api)))
 
