@@ -15,7 +15,9 @@
             context-menu
             context-commit-text-preview
             get-context
-            free-context))
+            free-context)
+  #:export-syntax
+  (check-context?))
 
 (define get-api-funcation %guile-rime-get-api-funcation)
 
@@ -31,16 +33,22 @@
   context?
   (bytestructure context-bytestructure))
 
+(define-check check-context?
+  context? "This is not <context> record!")
+
 (define (make-context-bytestructure)
   (struct-init %make-context %context))
 
 (define (context->pointer context)
+  (check-context? context)
   (bytestructure->pointer (context-bytestructure context)))
 
 (define (context-composition context)
+  (check-context? context)
   (%make-composition (bytestructure-ref (context-bytestructure context) 'composition)))
 
 (define (context-select-labels context)
+  (check-context? context)
   ;; (bytestructure-ref (context-bytestructure context)
   ;;                    'select-labels)
   (let*  ((select-labels (bytestructure-ref (context-bytestructure context)
@@ -58,9 +66,11 @@
   )
 
 (define (context-menu context)
+  (check-context? context)
   (%make-menu (bytestructure-ref (context-bytestructure context) 'menu)))
 
 (define (context-commit-text-preview context)
+  (check-context? context)
   (make-pointer->string (bytestructure-ref (context-bytestructure context) 'commit-text-preview)))
 
 (define %get-context
@@ -68,10 +78,13 @@
 
 (define* (get-context session #:optional
                       (context (make-context-bytestructure)))
+  (check-number? session)
+  (check-context? context)
   (%get-context session (context->pointer context))
   context)
 (define %free-context
   (get-api-funcation 'free-context ffi:int '(*)))
 
 (define (free-context context)
+  (check-context? context)
   (%free-context (context->pointer context)))

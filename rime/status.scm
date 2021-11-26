@@ -19,7 +19,9 @@
             make-status
             status?
             get-status
-            free-status))
+            free-status)
+  #:export-syntax
+  (check-status?))
 
 (define get-api-funcation %guile-rime-get-api-funcation)
 
@@ -39,41 +41,55 @@
   status?
   (bytestructure status-bytestructure))
 
+(define-check check-status?
+  status?
+  "This is not a <status> record!")
+
 (define (make-status)
   (struct-init %make-status %status))
 
 (define (status->point status)
+  (check-status? status)
   (bytestructure->pointer (status-bytestructure status)))
 
 (define (status-schema-id status)
+  (check-status? status)
   (make-pointer->string (bytestructure-ref
                          (status-bytestructure status)
                          'schema-id)))
 
 (define (status-schema-name status)
+  (check-status? status)
   (make-pointer->string (bytestructure-ref
                          (status-bytestructure status)
                          'schema-name)))
 
 (define (status-is-disabled status)
+  (check-status? status)
   (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-disabled)))
 
 (define (status-is-composing status)
+  (check-status? status)
   (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-composing)))
 
 (define (status-is-ascii-mode status)
+  (check-status? status)
   (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-ascii-mode)))
 
 (define (status-is-full-shape status)
+  (check-status? status)
   (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-full-shape)))
 
 (define (status-is-simplified status)
+  (check-status? status)
   (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-simplified)))
 
 (define (status-is-traditional status)
+  (check-status? status)
   (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-traditional)))
 
 (define (status-is-ascii-punct status)
+  (check-status? status)
   (c-int->bool (bytestructure-ref (status-bytestructure status) 'is-ascii-punct)))
 
 (define %get-status
@@ -81,10 +97,13 @@
 
 (define* (get-status session-id #:optional
                      (status (make-status)))
+  (check-status? status)
   (%get-status session-id (status->point status))
   status)
 
 (define %free-status
   (get-api-funcation 'free-status ffi:int '(*)))
+
 (define (free-status status)
+  (check-status? status)
   (%free-status (status->point status)))

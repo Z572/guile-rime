@@ -1,13 +1,16 @@
-#!/usr/bin/env -S guix shell guile librime guile-ncurses -- guile
+#!/usr/bin/env -S guix shell guile librime guile-ncurses -- guile --no-auto-compile
 !#
+
 (add-to-load-path (dirname (current-filename)))
 (use-modules ;; (rime main)
  (ncurses curses)
  (ncurses menu)
  (rime)
+ (rime utils)
  (ice-9 match)
  (srfi srfi-1)
- (srfi srfi-26))
+ (srfi srfi-26)
+ (srfi srfi-34))
 
 (define ~ (cut format #f <...>))
 (define-syntax-rule (push! elt v) (set! v (cons elt v)))
@@ -15,6 +18,7 @@
   (compose composition-preedit
            context-composition
            get-context))
+
 
 (define (move-end session-id)
   (set-caret-pos
@@ -136,6 +140,7 @@
     (addstr win " candidates: ")
     (draw-candidates win (menu-candidates menu)(menu-highlighted-candidate-index menu))
     (move win 3 1)
+    (addstr win (~ " get-current-schema: ~S" (get-current-schema session-id)))
     (addstr win (~ " schema-name: ~S" (status-schema-name s)))
 
     (addstr win (~ " page-size: ~S" (menu-page-size menu)))
@@ -171,14 +176,14 @@
   (addstr win (~ " sync-dir: ~S" (get-sync-dir)))
   (addstr win (~ " staging-dir: ~S" (get-staging-dir)))
   (addstr win (~ " user-id: ~S" (get-user-id)))
-  (addstr win (~ " user-data-sync-dir: ~S" (false-if-exception (get-user-data-sync-dir))))
+  (addstr win (~ " user-data-sync-dir: ~S" (get-user-data-sync-dir)))
   (addstr win (~ " prebuilt-data-dir: ~S\n" (get-prebuilt-data-dir)))
 
 
   (noutrefresh win))
 
 (define (draw-notifications win)
-
+  (clear win)
   (move win 1 1)
   (for-each (lambda (v)
               (addstr win (~ " ~a " (getcury win) ))
@@ -186,7 +191,7 @@
               (addstr win (~ "~S" v))
 
               (move win (1+ (getcury win)) 1))
-            (reverse notifications))
+            notifications)
   (box win (acs-vline) (acs-hline))
   (noutrefresh win))
 
@@ -252,7 +257,7 @@
 (define ww (newwin 5 (- (cols) 2) 1 1))
 (define winn (newwin 10 (- (cols) 2) 6 1))
 (define utils-win (newwin 9 (- (cols) 4) (- (lines) 9) 1))
-(define log-win (newwin (- (lines) 29) 80 20 1))
+(define log-win (newwin (- (lines) 29) 120 20 1))
 
 (define session-id (create-session))
 
@@ -289,7 +294,7 @@
                                )))
 
   (keypad! my-menu-win #t)
-  (addstr my-menu-win (get-current-schema session-id))
+  (addstr my-menu-win (~ "~S" (get-current-schema session-id)))
   (set-menu-mark! my-menu "=> ")
   (set-menu-win! my-menu my-menu-win)
   (set-menu-sub! my-menu  my-menu-subwin)
@@ -349,21 +354,33 @@
 (clearok! utils-win #t)
 
                                         ;(sleep 2)
-(let loop ()
-  (define ch (getch stdscr))
-  (define is-esc? (eqv? ch #\esc))
-  ;; (when (eqv? ch #\dc1)
-  ;;   (clear stdscr)
-  ;;   (refresh stdscr)
-  ;;   (endwin)
-  ;;   (finalize)
-  ;;   (exit 0))
-  (r-process-key session-id
-                 (if is-esc? (getch stdscr) ch)
-                 (if is-esc? 8 0))
-  (draw-main session-id ww)
-  (draw-info session-id winn)
-  (draw-util session-id utils-win)
-  (draw-notifications log-win)
-  (doupdate)
-  (loop))
+(while #t
+  (let* ((ch (getch stdscr))
+         (is-esc? (eqv? ch #\esc)))
+    ;; (when (eqv? ch #\dc1)
+    ;;   (clear stdscr)
+    ;;   (refresh stdscr)
+    ;;   (endwin)
+    ;;   (finalize)
+    ;;   (exit 0))
+    (guard (c ((check-error? c)
+               (push! (format #f "~a:~a:~a: ~a: source is `~S'. Value is `~S'.  ~a"
+                              (check-error-file-name c)
+                              (check-error-line c)
+                              (check-error-column c)
+                              (check-error-checker c)
+                              (check-error-source c)
+                              (check-error-value c)
+                              (check-error-message c))
+                      notifications)
+               ;; (raise c)
+               ))
+      (draw-notifications log-win)
+      (r-process-key session-id
+                     (if is-esc? (getch stdscr) ch)
+                     (if is-esc? 8 0))
+      (draw-main session-id ww)
+
+      (draw-info session-id winn)
+      (draw-util session-id utils-win))
+    (doupdate)))

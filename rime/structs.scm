@@ -52,6 +52,7 @@
 
 (define (setup traits)
   "Call this function before accessing any other rime functions."
+  (check-traits? traits)
   (%setup (traits->pointer traits)))
 
 (define %set-notification-handler
@@ -71,6 +72,7 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
   (get-api-funcation 'initialize void '(*)))
 
 (define (initialize traits)
+  (check-traits? traits)
   (%initialize (traits->pointer traits)))
 
 (define %finalize
@@ -104,6 +106,7 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
    void
    '(*)))
 (define (deployer-initialize traits)
+  (check-traits? traits)
   (%deployer-initialize (traits->pointer traits)))
 
 (define %prebuild
@@ -123,12 +126,15 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
    'deploy-schema ffi:int '(*)))
 
 (define (deploy-schema schema-file)
+  (check-string? schema-file)
   (%deploy-schema (string->pointer schema-file)))
 (define %deploy-config-file
   (get-api-funcation
    'deploy-config-file ffi:int '(* *)))
 
 (define (deploy-config-file file-name version-key)
+  (check-string? file-name)
+  (check-string? version-key)
   (%deploy-config-file (string->pointer file-name)
                        (string->pointer version-key)))
 
@@ -147,6 +153,9 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
    (list ffi:uintptr_t ffi:int ffi:int)))
 
 (define (process-key session-id keycode mask)
+  (check-number? session-id)
+  (check-number? keycode)
+  (check-number? mask)
   (c-int->bool (%process-key session-id keycode mask)))
 
 ;;; runtime options
@@ -155,6 +164,8 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
   (get-api-funcation 'set-option void (list ffi:uintptr_t '* ffi:int)))
 
 (define (set-option session-id option value)
+  (check-number? session-id)
+  (check-string? option)
   (%set-option session-id
                (string->pointer option)
                (bool->c-int value)))
@@ -163,12 +174,17 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
   (get-api-funcation 'get-option ffi:int (list ffi:uintptr_t '*)))
 
 (define (get-option session-id option)
+  (check-number? session-id)
+  (check-string? option)
   (%get-option session-id  (string->pointer option)))
 
 (define %set-property
   (get-api-funcation 'set-property ffi:int (list ffi:uintptr_t '* '*)))
 
 (define (set-property session-id prop value)
+  (check-number? session-id)
+  (check-string? prop)
+  (check-string? value)
   (%set-property session-id
                  (string->pointer prop)
                  (string->pointer value)))
@@ -177,6 +193,10 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
   (get-api-funcation 'get-property ffi:int (list ffi:uintptr_t '* ffi:int ffi:size_t)))
 
 (define (get-property session-id prop value buffer-size)
+  (check-number? session-id)
+  (check-string? prop)
+  (check-string? value)
+  (check-number? buffer-size)
   (%get-property session-id
                  (string->pointer prop)
                  (string->pointer-address value)
@@ -188,6 +208,8 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
   (get-api-funcation 'schema-open ffi:int '(* *)))
 
 (define (schema-open schema-id config)
+  (check-string? schema-id)
+  (check-config? config)
   (%schema-open (string->pointer schema-id) (config->pointer config)))
 
 ;;; testing
@@ -197,6 +219,8 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
                      (list ffi:uintptr_t '*)))
 
 (define (simulate-key-sequence session-id key-sequence)
+  (check-number? session-id)
+  (check-string? key-sequence)
   (%simulate-key-sequence
    session-id (string->pointer key-sequence)))
 
@@ -205,6 +229,7 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
 (define %run-task
   (get-api-funcation 'run-task ffi:int '(*)))
 (define (run-task task-name)
+  (check-string? task-name)
   (%run-task (string->pointer task-name)))
 
 
@@ -220,6 +245,7 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
    '* (list ffi:uintptr_t)))
 
 (define (get-input session-id)
+  (check-number? session-id)
   "get raw input string for @{}process-key inputs"
   (pointer->string (%get-input session-id)))
 
@@ -227,10 +253,13 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
   (get-api-funcation 'get-caret-pot ffi:size_t (list ffi:uintptr_t)))
 
 (define (get-caret-pot session-id)
+  (check-number? session-id)
   (%get-caret-pot session-id))
 
 (define %set-caret-pos
   (get-api-funcation 'set-caret-pos void (list ffi:uintptr_t ffi:size_t)))
 
 (define (set-caret-pos session-id caret-pos)
+  (check-number? session-id)
+  (check-number? caret-pos)
   (%set-caret-pos session-id caret-pos))

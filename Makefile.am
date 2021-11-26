@@ -39,6 +39,7 @@ SUFFIXES = .scm .go
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_TARGET) $(GUILE_WARNINGS) -o "$@" "$<"
 
 SOURCES = rime.scm                  \
+  rime/check.scm                    \
   rime/candidate.scm                \
   rime/configuration.scm            \
   rime/composition.scm              \

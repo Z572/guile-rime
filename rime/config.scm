@@ -37,7 +37,10 @@
             config-create-list
             config-create-map
             config-list-size
-            config-begin-list))
+            config-begin-list)
+  #:export-syntax
+  (check-config?
+   check-config-iterator?))
 
 (define get-api-funcation %guile-rime-get-api-funcation)
 
@@ -50,13 +53,18 @@
   config?
   (bytestructure config-bytestructure))
 
+(define-check check-config?
+  config? "This is not a <config> record!")
+
 (define (make-config-bytestructure)
   (%make-config (bytestructure %config)))
 
 (define (config->pointer config)
+  (check-config? config)
   (bytestructure->pointer (config-bytestructure config)))
 
 (define (config-ptr config)
+  (check-config? config)
   (bytestructure-ref
    (config-bytestructure config)
    'ptr))
@@ -74,14 +82,20 @@
   config-iterator?
   (bytestructure config-iterator-bytestructure))
 
-(define (config-iterator->pointer config-iterator)
+(define-check check-config-iterator?
+  config-iterator? "This is not a <config-iterator> record!")
+
+(define (config-iterator->pointer iterator)
+  (check-config-iterator? iterator)
   (bytestructure->pointer
    (config-iterator-bytestructure
-    config-iterator)))
+    iterator)))
 (define %config-open
   (get-api-funcation 'config-open ffi:int '(* *)))
 
 (define* (config-open config-id #:optional (config (make-config-bytestructure)))
+  (check-string? config-id)
+  (check-config? config)
   (%config-open (string->pointer config-id) (config->pointer config))
   config)
 
@@ -91,6 +105,7 @@
    (list '*)))
 
 (define (config-close config)
+  (check-config? config)
   (%config-close (config->pointer config)))
 
 (define %config-get-bool
@@ -99,6 +114,8 @@
    (list '* '* ffi:int)))
 
 (define (config-get-bool config key value)
+  (check-string? key)
+  (check-config? config)
   (%config-get-bool (config->pointer config)
                     (string->pointer key)
                     value))
@@ -109,6 +126,8 @@
    (list '* '* ffi:int)))
 
 (define (config-get-int config key value)
+  (check-string? key)
+  (check-config? config)
   (%config-get-int (config->pointer config) (string->pointer key) value))
 
 (define %config-get-double
@@ -118,6 +137,8 @@
    (list '* '* ffi:double)))
 
 (define (config-get-double config key value)
+  (check-string? key)
+  (check-config? config)
   (%config-get-double (config->pointer config) (string->pointer key) value))
 
 (define %config-get-string
@@ -127,6 +148,8 @@
    (list '* '* ffi:int ffi:size_t)))
 
 (define* (config-get-string config key #:optional (value (bs:pointer int)) (buffer-size 100))
+  (check-string? key)
+  (check-config? config)
   (%config-get-string
    (config->pointer config)
    (string->pointer key)
@@ -140,6 +163,8 @@
    (list '* '* )))
 
 (define (config-get-cstring config key)
+  (check-config? config)
+  (check-string? key)
   (let ((ptr (%config-get-cstring
               (config->pointer config)
               (string->pointer key))))
@@ -153,6 +178,8 @@
    (list '* '*)))
 
 (define (config-update-signature config key)
+  (check-config? config)
+  (check-string? key)
   (%config-update-signature
    (config->pointer config)
    (string->pointer key)))
@@ -163,6 +190,9 @@
    (list '* '* '*)))
 
 (define (config-begin-map iterator config key)
+  (check-config-iterator? iterator)
+  (check-config? config)
+  (check-string? key)
   (%config-begin-map (config-iterator->pointer iterator)
                      (config->pointer config)
                      (string->pointer key)))
@@ -173,6 +203,7 @@
    (list '*)))
 
 (define (config-next iterator)
+  (check-config-iterator? iterator)
   (%config-next (config-iterator->pointer iterator)))
 
 (define %config-end
@@ -181,6 +212,7 @@
    (list '*)))
 
 (define (config-end iterator)
+  (check-config-iterator? iterator)
   (%config-end (config-iterator->pointer iterator)))
 
 (define %user-config-open
@@ -191,6 +223,8 @@
 
 (define* (user-config-open config-id #:optional
                            (config (make-config-bytestructure)))
+  (check-string? config-id)
+  (check-config? config)
   (and (c-int->bool
         (%user-config-open
          (string->pointer config-id)
@@ -200,6 +234,7 @@
   (get-api-funcation 'config-init ffi:int '(*)))
 
 (define (config-init config)
+  (check-config? config)
   (%config-init (config->pointer config))
   config)
 
@@ -208,6 +243,8 @@
    'config-load-string ffi:int '(* *)))
 
 (define (config-load-string config yaml)
+  (check-config? config)
+  (check-string? yaml)
   (%config-load-string
    (config->pointer config)
    (string->pointer yaml)))
@@ -219,6 +256,8 @@
    (list '* '* ffi:int)))
 
 (define (config-set-bool config key value)
+  (check-config? config)
+  (check-string? key)
   (%config-set-bool
    (config->pointer config)
    (string->pointer key)
@@ -231,6 +270,8 @@
    (list '* '* ffi:int)))
 
 (define (config-set-int config key value)
+  (check-config? config)
+  (check-string? key)
   (%config-set-int
    (config->pointer config)
    (string->pointer key)
@@ -243,6 +284,8 @@
    (list '* '* ffi:double)))
 
 (define (config-set-double config key value)
+  (check-config? config)
+  (check-string? key)
   (%config-set-double (config->pointer config) (string->pointer key) value))
 
 (define %config-set-string
@@ -252,6 +295,8 @@
    (list '* '* '*)))
 
 (define (config-set-string config key value)
+  (check-config? config)
+  (check-string? key)
   (%config-set-string (config->pointer config)
                       (string->pointer key)
                       (string->pointer value)))
@@ -263,6 +308,8 @@
    (list '* '* '*)))
 
 (define (config-get-item config key value)
+  (check-config? config)
+  (check-string? key)
   (%config-get-item
    (config->pointer config)
    (string->pointer key)
@@ -274,6 +321,8 @@
    ffi:int (list '* '* '*)))
 
 (define (config-set-item config key value)
+  (check-config? config)
+  (check-string? key)
   (%config-set-item
    (config->pointer config)
    (string->pointer key)
@@ -285,6 +334,8 @@
    ffi:int '(* *)))
 
 (define (config-clear config key)
+  (check-config? config)
+  (check-string? key)
   (%config-clear
    (config->pointer config)
    (string->pointer key)))
@@ -294,6 +345,8 @@
    'config-create-list ffi:int '(* *)))
 
 (define (config-create-list config key)
+  (check-config? config)
+  (check-string? key)
   (%config-create-list (config->pointer config) (string->pointer key)))
 
 (define %config-create-map
@@ -301,6 +354,8 @@
    'config-create-map ffi:int '(* *)))
 
 (define (config-create-map config key)
+  (check-config? config)
+  (check-string? key)
   (%config-create-map (config->pointer config) (string->pointer key)))
 
 (define %config-list-size
@@ -308,6 +363,8 @@
    'config-list-size ffi:size_t '(* *)))
 
 (define (config-list-size config key)
+  (check-config? config)
+  (check-string? key)
   (%config-list-size (config->pointer config) (string->pointer key)))
 
 (define %config-begin-list
@@ -315,6 +372,9 @@
    'config-begin-list ffi:int '(* * *)))
 
 (define (config-begin-list iterator config key)
+  (check-config-iterator? iterator)
+  (check-config? config)
+  (check-string? key)
   (%config-begin-list
    (config-iterator->pointer iterator)
    (config->pointer config)

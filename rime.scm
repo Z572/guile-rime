@@ -4,6 +4,7 @@
   (begin
     (define %public-modules
       '((rime candidate)
+        (rime check)
         (rime structs)
         (rime traits)
         (rime menu)

@@ -8,7 +8,10 @@
             traits-shared-data-dir
             traits-app-name
             traits-log-dir
-            traits-modules))
+            traits-modules
+            )
+  #:export-syntax
+  (check-traits?))
 
 (define %traits
   (bs:struct
@@ -30,6 +33,9 @@
   traits?
   (bytestructure traits-bytestructure))
 
+(define-check check-traits? traits?
+  "This is not a <traits> record!")
+
 (define* (make-traits #:key
                       (shared-data-dir %rime-shared-data-dir)
                       user-data-dir;; ( ".";; (getenv(getenv "HOME"))
@@ -49,22 +55,27 @@
            (distribution-version ,(string->pointer-address  distribution-version)))))
 
 (define (traits->pointer traits)
+  (check-traits? traits)
   (bytestructure->pointer (traits-bytestructure traits)))
 
 (define (traits-shared-data-dir traits)
+  (check-traits? traits)
   (make-pointer->string
    (bytestructure-ref
     (traits-bytestructure traits)
     'shared-data-dir)))
 
 (define (traits-app-name traits)
+  (check-traits? traits)
   (make-pointer->string
    (bytestructure-ref
     (traits-bytestructure traits)
     'app-name)))
 
 (define (traits-log-dir traits)
+  (check-traits? traits)
   (bytestructure-ref (traits-bytestructure traits) 'log-dir))
 
 (define (traits-modules traits)
+  (check-traits? traits)
   (bytestructure-ref (traits-bytestructure traits) 'modules))

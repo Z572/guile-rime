@@ -9,7 +9,9 @@
             commit->pointer
             commit-text
             get-commit
-            free-commit))
+            free-commit)
+  #:export-syntax
+  (check-commit?))
 
 (define get-api-funcation %guile-rime-get-api-funcation)
 
@@ -24,10 +26,15 @@
 (define (make-commit-bytestructure)
   (struct-init %make-commit %commit))
 
+(define-check check-commit?
+  commit? "This is not <commit> record!")
+
 (define (commit->pointer commit)
+  (check-commit? commit)
   (bytestructure->pointer (commit-bytestructure commit)))
 
 (define (commit-text commit)
+  (check-commit? commit)
   (make-pointer->string (bytestructure-ref
                          (commit-bytestructure commit)
                          'text)))
@@ -39,6 +46,7 @@
    ffi:int (list ffi:uintptr_t '*)))
 
 (define* (get-commit session-id #:optional (commit (make-commit-bytestructure)))
+  (check-commit? commit)
   (%get-commit session-id (commit->pointer commit))
   commit)
 
@@ -49,4 +57,5 @@
    (list  '*)))
 
 (define (free-commit commit)
+  (check-commit? commit)
   (%free-commit (commit->pointer commit)))

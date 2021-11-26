@@ -30,6 +30,12 @@ AC_ARG_WITH([rime-data-dir],
 AC_MSG_RESULT(checking for Rime data directory to use ... $RIME_DATA)
 AC_SUBST([RIME_DATA])
 
+AC_ARG_WITH([debug-mode],
+    [AS_HELP_STRING([--with-debug-mode],
+        [enable debug mode])],
+        [DEBUG_MODE="#true"],
+        [DEBUG_MODE="#false"])
+AC_SUBST([DEBUG_MODE])
 dnl Search for 'guile' and 'guild'.  This macro defines
 dnl 'GUILE_EFFECTIVE_VERSION'.
 

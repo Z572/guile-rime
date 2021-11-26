@@ -14,7 +14,8 @@
             menu-highlighted-candidate-index
             menu-num-candidates
             menu-candidates
-            menu-select-keys))
+            menu-select-keys
+            check-menu?))
 
 (define %menu
   (bs:struct
@@ -31,28 +32,38 @@
   menu?
   (bytestructure menu-bytestructure))
 
+(define-check check-menu?
+  menu? "This is not a <menu> record!")
+
 (define (make-menu-bytestructure)
   (%make-menu (bytestructure %menu)))
 
 (define (menu->pointer menu)
+  (check-menu? menu)
   (bytestructure->pointer (menu-bytestructure menu)))
 
 (define (menu-page-size menu)
+  (check-menu? menu)
   (bytestructure-ref (menu-bytestructure menu) 'page-size))
 
 (define (menu-page-no menu)
+  (check-menu? menu)
   (bytestructure-ref (menu-bytestructure menu) 'page-no))
 
 (define (menu-is-last-page menu)
+  (check-menu? menu)
   (c-int->bool (bytestructure-ref (menu-bytestructure menu) 'is-last-page)))
 
 (define (menu-highlighted-candidate-index menu)
+  (check-menu? menu)
   (bytestructure-ref (menu-bytestructure menu) 'highlighted-candidate-index))
 
 (define (menu-num-candidates menu)
+  (check-menu? menu)
   (bytestructure-ref (menu-bytestructure menu) 'num-candidates))
 
 (define (menu-candidates menu)
+  (check-menu? menu)
   (if (zero? (menu-num-candidates menu))
       '()
       (let ((candidates* (pointer->bytestructure
@@ -70,4 +81,5 @@
                     (- num 1)))))))
 
 (define (menu-select-keys menu)
+  (check-menu? menu)
   (bytestructure-ref (menu-bytestructure menu) 'select-keys))

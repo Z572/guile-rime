@@ -20,7 +20,9 @@
             module-initialize
             module-finalize
             register-module
-            find-module))
+            find-module)
+  #:export-syntax
+  (check-module?))
 
 (define get-api-funcation %guile-rime-get-api-funcation)
 
@@ -47,18 +49,24 @@
   module?
   (bytestructure module-bytestructure))
 
+(define-check check-module? module?
+  "This is not a <module> record!")
+
 (define (make-module-bytestructure)
   (struct-init %make-module %module))
 
 (define (module->pointer module)
+  (check-module? module)
   (bytestructure->pointer
    (module-bytestructure module)))
 
 (define (pointer->module pointer)
+  (check-pointer? pointer)
   (%make-module
    (pointer->bytestructure pointer %module)))
 
 (define (module-get-api module)
+  (check-module? module)
   (let ((p (pointer->procedure
             '* (make-pointer (bytestructure-ref
                               (module-bytestructure module)
@@ -66,22 +74,35 @@
     (p)))
 
 (define (module-module-name module)
-  (make-pointer->string (bytestructure-ref (module-bytestructure module) 'module-name)))
+  (check-module? module)
+  (make-pointer->string
+   (bytestructure-ref
+    (module-bytestructure module) 'module-name)))
 
 (define (module-initialize module)
-  (pointer->procedure void (make-pointer (bytestructure-ref (module-bytestructure module) 'initialize)) '()))
+  (check-module? module)
+  (pointer->procedure
+   void (make-pointer
+         (bytestructure-ref
+          (module-bytestructure module) 'initialize)) '()))
 
 (define (module-finalize module)
-  (pointer->procedure void (make-pointer (bytestructure-ref (module-bytestructure module) 'finalize)) '()))
+  (check-module? module)
+  (pointer->procedure
+   void (make-pointer
+         (bytestructure-ref
+          (module-bytestructure module) 'finalize)) '()))
 
 (define %register-module
   (get-api-funcation 'register-module ffi:int '(*)))
 
 (define (register-module module)
+  (check-module? module)
   (%register-module (module->pointer module)))
 
 (define %find-module
   (get-api-funcation 'find-module '* '(*)))
 
 (define (find-module module-name)
+  (check-string? module-name)
   (pointer->module (%find-module (string->pointer module-name))))
