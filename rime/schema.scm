@@ -5,6 +5,7 @@
   #:use-module (bytestructures guile)
   #:use-module ((system foreign) #:select (make-pointer
                                            string->pointer
+                                           pointer->string
                                            void
                                            (int . ffi:int)
                                            (uintptr_t . ffi:uintptr_t)
@@ -110,13 +111,11 @@
                      ffi:int (list ffi:uintptr_t '* ffi:size_t)))
 
 (define* (get-current-schema session-id #:optional
-                             (schema-id (bytestructure (bs:string 10 'utf8)))
-                             (buffer-size (bytestructure-size schema-id) ))
-
-  (%get-current-schema session-id
-                       (bytestructure->pointer schema-id)
-                       buffer-size)
-  (bytestructure-ref schema-id))
+                             (schema-id (make-string 20))
+                             (buffer-size (string-length schema-id)))
+  (let ((p (string->pointer schema-id)))
+    (%get-current-schema session-id p buffer-size)
+    (pointer->string p)))
 
 (define %select-schema
   (get-api-funcation 'select-schema ffi:int (list ffi:uintptr_t '* )))

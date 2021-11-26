@@ -3,6 +3,7 @@
   #:use-module (rime utils)
   #:use-module (bytestructures guile)
   #:use-module ((system foreign) #:select (pointer->string
+                                           string->pointer
                                            void
                                            (int . ffi:int)
                                            (size_t . ffi:size_t)
@@ -46,10 +47,11 @@
 
 (define* (get-user-data-sync-dir
           #:optional
-          (dir (bytestructure (bs:string 250 'utf8)))
-          (buffer-size (bytestructure-size dir)))
-  (%get-user-data-sync-dir (bytestructure->pointer dir) buffer-size)
-  (bytestructure-ref dir))
+          (dir (make-string 250))
+          (buffer-size (string-length dir)))
+  (let ((p (string->pointer dir)))
+    (%get-user-data-sync-dir p buffer-size)
+    (pointer->string p)))
 
 (define %get-version
   (get-api-funcation 'get-version '* '()))
