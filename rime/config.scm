@@ -145,16 +145,17 @@
   (get-api-funcation
    'config-get-string
    ffi:int
-   (list '* '* ffi:int ffi:size_t)))
+   (list '* '* '* ffi:size_t)))
 
-(define* (config-get-string config key #:optional (value (bs:pointer int)) (buffer-size 100))
+(define* (config-get-string config key #:optional (value (make-string 30)) (buffer-size 100))
   (check-string? key)
   (check-config? config)
-  (%config-get-string
-   (config->pointer config)
-   (string->pointer key)
-   value buffer-size)
-  value)
+  (let ((s (string->pointer value)))
+    (%config-get-string
+     (config->pointer config)
+     (string->pointer key)
+     s buffer-size)
+    (pointer->string s)))
 
 (define %config-get-cstring
   (get-api-funcation
