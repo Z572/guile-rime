@@ -169,9 +169,7 @@
   (let ((ptr (%config-get-cstring
               (config->pointer config)
               (string->pointer key))))
-    (make-pointer->string
-     (string->number
-      (pointer->string ptr)))))
+    (pointer->string ptr)))
 
 (define %config-update-signature
   (get-api-funcation
