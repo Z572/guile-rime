@@ -11,6 +11,7 @@
                                            (double . ffi:double)
                                            (size_t . ffi:size_t)))
   #:export (config->pointer
+            pointer->config
             config-iterator?
             config-iterator->pointer
             config-open
@@ -62,6 +63,9 @@
 (define (config->pointer config)
   (check-config? config)
   (bytestructure->pointer (config-bytestructure config)))
+
+(define (pointer->config pointer)
+  (%make-config (pointer->bytestructure pointer %config)))
 
 (define (config-ptr config)
   (check-config? config)
