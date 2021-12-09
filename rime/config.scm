@@ -128,12 +128,14 @@
 (define %config-get-int
   (get-api-funcation
    'config-get-int ffi:int
-   (list '* '* ffi:int)))
+   (list '* '* '*)))
 
-(define (config-get-int config key value)
+(define (config-get-int config key)
   (check-string? key)
   (check-config? config)
-  (%config-get-int (config->pointer config) (string->pointer key) value))
+  (let ((v (bytestructure->pointer (bytestructure int))))
+    (%config-get-int (config->pointer config) (string->pointer key) v)
+    (bytestructure-ref (pointer->bytestructure v int))))
 
 (define %config-get-double
   (get-api-funcation
