@@ -14,6 +14,7 @@
             pointer->config
             config-iterator?
             config-iterator->pointer
+            schema-open
             config-open
             config-close
             config-get-bool
@@ -94,6 +95,16 @@
   (bytestructure->pointer
    (config-iterator-bytestructure
     iterator)))
+
+(define %schema-open
+  (get-api-funcation 'schema-open ffi:int '(* *)))
+
+(define (schema-open schema-id)
+  (check-string? schema-id)
+  (let ((p (config->pointer (make-config-bytestructure))))
+    (%schema-open (string->pointer schema-id) p)
+    (pointer->config p)))
+
 (define %config-open
   (get-api-funcation 'config-open ffi:int '(* *)))
 

@@ -202,16 +202,6 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
                  (string->pointer-address value)
                  buffer-size))
 
-;;; configuration
-
-(define %schema-open
-  (get-api-funcation 'schema-open ffi:int '(* *)))
-
-(define (schema-open schema-id config)
-  (check-string? schema-id)
-  (check-config? config)
-  (%schema-open (string->pointer schema-id) (config->pointer config)))
-
 ;;; testing
 
 (define %simulate-key-sequence
