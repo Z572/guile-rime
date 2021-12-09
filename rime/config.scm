@@ -115,14 +115,15 @@
 (define %config-get-bool
   (get-api-funcation
    'config-get-bool ffi:int
-   (list '* '* ffi:int)))
+   (list '* '* '*)))
 
-(define (config-get-bool config key value)
+(define (config-get-bool config key)
   (check-string? key)
   (check-config? config)
-  (%config-get-bool (config->pointer config)
-                    (string->pointer key)
-                    value))
+  (let ((v (bytestructure->pointer (bytestructure int))))
+    (c-int->bool (%config-get-bool (config->pointer config)
+                                   (string->pointer key) v))
+    (c-int->bool (bytestructure-ref (pointer->bytestructure v int)))))
 
 (define %config-get-int
   (get-api-funcation
