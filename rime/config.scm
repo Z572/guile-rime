@@ -305,9 +305,11 @@
 (define (config-set-string config key value)
   (check-config? config)
   (check-string? key)
-  (%config-set-string (config->pointer config)
-                      (string->pointer key)
-                      (string->pointer value)))
+  (c-int->bool
+   (%config-set-string
+    (config->pointer config)
+    (string->pointer key)
+    (string->pointer value))))
 
 (define %config-get-item
   (get-api-funcation
