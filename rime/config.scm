@@ -141,12 +141,14 @@
   (get-api-funcation
    'config-get-double
    ffi:int
-   (list '* '* ffi:double)))
+   (list '* '* '*)))
 
-(define (config-get-double config key value)
+(define (config-get-double config key)
   (check-string? key)
   (check-config? config)
-  (%config-get-double (config->pointer config) (string->pointer key) value))
+  (let ((v (bytestructure->pointer (bytestructure double))))
+    (%config-get-double (config->pointer config) (string->pointer key) v)
+    (bytestructure-ref (pointer->bytestructure v double))))
 
 (define %config-get-string
   (get-api-funcation
