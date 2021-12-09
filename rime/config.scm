@@ -310,13 +310,15 @@
    ffi:int
    (list '* '* '*)))
 
-(define (config-get-item config key value)
+(define (config-get-item config key)
   (check-config? config)
   (check-string? key)
-  (%config-get-item
-   (config->pointer config)
-   (string->pointer key)
-   (config->pointer value)))
+  (let ((p (config->pointer (make-config-bytestructure))))
+    (if (c-int->bool (%config-get-item
+                      (config->pointer config)
+                      (string->pointer key)
+                      p))
+        (pointer->config p))))
 
 (define %config-set-item
   (get-api-funcation
