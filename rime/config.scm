@@ -294,7 +294,7 @@
 (define (config-set-double config key value)
   (check-config? config)
   (check-string? key)
-  (%config-set-double (config->pointer config) (string->pointer key) value))
+  (c-int->bool (%config-set-double (config->pointer config) (string->pointer key) value)))
 
 (define %config-set-string
   (get-api-funcation
