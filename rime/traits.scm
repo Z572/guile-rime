@@ -7,6 +7,7 @@
             traits->pointer
             traits-shared-data-dir
             traits-app-name
+            traits-user-data-dir
             traits-log-dir
             traits-modules
             )
@@ -71,6 +72,13 @@
    (bytestructure-ref
     (traits-bytestructure traits)
     'app-name)))
+
+(define (traits-user-data-dir traits)
+  (check-traits? traits)
+  (make-pointer->string
+   (bytestructure-ref
+    (traits-bytestructure traits)
+    'user-data-dir)))
 
 (define (traits-log-dir traits)
   (check-traits? traits)
