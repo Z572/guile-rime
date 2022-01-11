@@ -39,17 +39,22 @@
 
 (define* (make-traits #:key
                       (shared-data-dir %rime-shared-data-dir)
-                      user-data-dir;; ( ".";; (getenv(getenv "HOME"))
-                      ;;   )
-                      ;;(log-dir "/tmp")
+                      user-data-dir
+                      log-dir
                       (app-name "rime.guile")
                       (distribution-name "Grime")
                       (distribution-code-name %guile-rime-package-name)
-                      (distribution-version %guile-rime-version))
+                      (distribution-version %guile-rime-version)
+                      min-log-level
+                      prebuilt-data-dir
+                      staging-dir)
   (apply struct-init %make-traits %traits
          `((shared-data-dir ,(string->pointer-address shared-data-dir))
-           (user-data-dir ,(string->pointer-address user-data-dir))
-           ;;(log-dir ,(string->pointer-address log-dir))
+           ,@(if user-data-dir `((user-data-dir ,(string->pointer-address user-data-dir))) '())
+           ,@(if log-dir `((log-dir ,(string->pointer-address log-dir))) '())
+           ,@(if min-log-level `((min-log-level ,min-log-level)) '())
+           ,@(if prebuilt-data-dir `((prebuilt-data-dir ,(string->pointer-address prebuilt-data-dir))) '())
+           ,@(if staging-dir `((staging-dir ,(string->pointer-address staging-dir))) '())
            (app-name ,(string->pointer-address app-name))
            (distribution-name ,(string->pointer-address distribution-name))
            (distribution-code-name ,(string->pointer-address  distribution-code-name))
