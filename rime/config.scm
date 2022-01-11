@@ -199,9 +199,10 @@
 (define (config-update-signature config key)
   (check-config? config)
   (check-string? key)
-  (%config-update-signature
-   (config->pointer config)
-   (string->pointer key)))
+  (let* ((c (config->pointer config))
+         (out (%config-update-signature c (string->pointer key))))
+    (if (c-int->bool out)
+        (pointer->config c))))
 
 (define %config-begin-map
   (get-api-funcation
