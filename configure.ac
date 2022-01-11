@@ -33,8 +33,8 @@ AC_MSG_CHECKING([Rime data directory])
 AC_MSG_RESULT([$RIME_DATA])
 AC_SUBST([RIME_DATA])
 
-AC_ARG_WITH([debug-mode],
-    [AS_HELP_STRING([--with-debug-mode],
+AC_ARG_ENABLE([debug-mode],
+    [AS_HELP_STRING([--enable-debug-mode],
         [enable debug mode])],
         [DEBUG_MODE="#true"],
         [DEBUG_MODE="#false"])
