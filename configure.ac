@@ -24,10 +24,13 @@ AS_IF([test "x$RIME_LIBDIR" = "x"], [
 ])
 AC_SUBST([RIME_LIBDIR])
 AC_ARG_WITH([rime-data-dir],
-    [AS_HELP_STRING([--with-rime-data-dir=PATH],
-    [find rime-data dir])],
-          [RIME_DATA="$withval"], [AC_MSG_ERROR("Must set with-rime-data-dir")])
-AC_MSG_RESULT(checking for Rime data directory to use ... $RIME_DATA)
+    [AS_HELP_STRING([--with-rime-data-dir=DIR],
+      [name of the default Rime data directory])],
+    [RIME_DATA="$withval"],
+    [RIME_DATA="/usr/share/rime-data"])
+
+AC_MSG_CHECKING([Rime data directory])
+AC_MSG_RESULT([$RIME_DATA])
 AC_SUBST([RIME_DATA])
 
 AC_ARG_WITH([debug-mode],
