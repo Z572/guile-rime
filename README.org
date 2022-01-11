@@ -1,5 +1,12 @@
--*- mode: org; coding: utf-8; -*-
+#-*- mode: org; coding: utf-8; -*-
 
 #+TITLE: README for Guile-Rime
 
-guile ffi of rime 
+Guile bindings for Rime.
+
+#+begin_src scheme
+  (use-modules (rime))
+#+end_src
+
+
+Thanks for [[https://rime.im][rime]], [[https://github.com/DogLooksGood/emacs-rime][emacs-rime]], [[https://guix.gnu.org][guix]], [[https://gitlab.com/guile-git/guile-git][guile-git]]
