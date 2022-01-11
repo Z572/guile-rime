@@ -171,11 +171,11 @@
   (check-string? key)
   (check-config? config)
   (let ((s (string->pointer value)))
-    (%config-get-string
-     (config->pointer config)
-     (string->pointer key)
-     s buffer-size)
-    (pointer->string s)))
+    (if (%config-get-string
+         (config->pointer config)
+         (string->pointer key)
+         s buffer-size)
+        (pointer->string s))))
 
 (define %config-get-cstring
   (get-api-funcation
