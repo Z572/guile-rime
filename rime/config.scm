@@ -167,7 +167,7 @@
    ffi:int
    (list '* '* '* ffi:size_t)))
 
-(define* (config-get-string config key #:optional (value (make-string 30)) (buffer-size 100))
+(define* (config-get-string config key #:optional (value (make-string 30)) (buffer-size (string-length value)))
   (check-string? key)
   (check-config? config)
   (let ((s (string->pointer value)))
