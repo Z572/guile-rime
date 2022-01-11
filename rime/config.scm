@@ -379,7 +379,11 @@
 (define (config-create-map config key)
   (check-config? config)
   (check-string? key)
-  (%config-create-map (config->pointer config) (string->pointer key)))
+  (if (c-int->bool
+       (%config-create-map
+        (config->pointer config)
+        (string->pointer key)))
+      config))
 
 (define %config-list-size
   (get-api-funcation
