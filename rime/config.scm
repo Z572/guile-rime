@@ -58,7 +58,7 @@
 (define-check check-config?
   config? "This is not a <config> record!")
 
-(define (make-config-bytestructure)
+(define (make-config)
   (%make-config (bytestructure %config)))
 
 (define (config->pointer config)
@@ -101,14 +101,14 @@
 
 (define (schema-open schema-id)
   (check-string? schema-id)
-  (let ((p (config->pointer (make-config-bytestructure))))
+  (let ((p (config->pointer (make-config))))
     (%schema-open (string->pointer schema-id) p)
     (pointer->config p)))
 
 (define %config-open
   (get-api-funcation 'config-open ffi:int '(* *)))
 
-(define* (config-open config-id #:optional (config (make-config-bytestructure)))
+(define* (config-open config-id #:optional (config (make-config)))
   (check-string? config-id)
   (check-config? config)
   (%config-open (string->pointer config-id) (config->pointer config))
@@ -243,7 +243,7 @@
    (list '* '*)))
 
 (define* (user-config-open config-id #:optional
-                           (config (make-config-bytestructure)))
+                           (config (make-config)))
   (check-string? config-id)
   (check-config? config)
   (and (c-int->bool
@@ -333,7 +333,7 @@
 (define (config-get-item config key)
   (check-config? config)
   (check-string? key)
-  (let ((p (config->pointer (make-config-bytestructure))))
+  (let ((p (config->pointer (make-config))))
     (if (c-int->bool (%config-get-item
                       (config->pointer config)
                       (string->pointer key)
