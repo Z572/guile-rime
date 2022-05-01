@@ -58,13 +58,15 @@ SOURCES = rime.scm                  \
   rime/module.scm                   \
   rime/utils.scm
 
-TESTS = 
+TESTS = tests/info.scm              \
+  tests/config.scm \
+	tests/check.scm
 
 TEST_EXTENSIONS = .scm
 SCM_LOG_DRIVER =                                \
   $(top_builddir)/pre-inst-env                  \
   $(GUILE) --no-auto-compile -e main            \
-      $(top_srcdir)/build-aux/test-driver.scm
+  $(top_srcdir)/build-aux/test-driver.scm
 
 # Tell 'build-aux/test-driver.scm' to display only source file names,
 # not indivdual test names.
