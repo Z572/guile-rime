@@ -1,4 +1,4 @@
-#!/usr/bin/env -S guix shell guile librime guile-ncurses -- guile --no-auto-compile
+#!/usr/bin/env -S guix shell -D --file=guix.scm -- guile --no-auto-compile
 !#
 
 (add-to-load-path (dirname (current-filename)))
@@ -229,7 +229,8 @@
                  (or (and=>
                       (getenv "XDG_CONFIG_HOME")
                       (cut string-append <> "/grime/"))
-                     (string-append (getenv "HOME") "/.config/grime/")))))
+                     (string-append (getenv "HOME") "/.config/grime/"))
+                 #:min-log-level 0)))
     (display "set-notification-handler..." )
     (when #f
       (set-notification-handler (lambda v

@@ -7,6 +7,7 @@
   #:use-module ((system foreign) #:select (pointer->string
                                            string->pointer
                                            void
+                                           null-pointer?
                                            (int . ffi:int)
                                            (double . ffi:double)
                                            (size_t . ffi:size_t)))
@@ -132,12 +133,14 @@
    (list '* '* '*)))
 
 (define (config-get-bool config key)
+  "#f is no-found in CONFIG or just return #f, is a quertify, so this procedure
+return two value: first is value ,and you must check second, if it's #f ,no value found in CONFIG."
   (check-string? key)
   (check-config? config)
-  (let ((v (bytestructure->pointer (bytestructure int))))
-    (c-int->bool (%config-get-bool (config->pointer config)
-                                   (string->pointer key) v))
-    (c-int->bool (bytestructure-ref (pointer->bytestructure v int)))))
+  (let* ((v (bytestructure->pointer (bytestructure int)))
+         (out (c-int->bool (%config-get-bool (config->pointer config)
+                                             (string->pointer key) v))))
+    (values (c-int->bool (bytestructure-ref (pointer->bytestructure v int))) out)))
 
 (define %config-get-int
   (get-api-funcation
@@ -148,8 +151,9 @@
   (check-string? key)
   (check-config? config)
   (let ((v (bytestructure->pointer (bytestructure int))))
-    (%config-get-int (config->pointer config) (string->pointer key) v)
-    (bytestructure-ref (pointer->bytestructure v int))))
+    (and (c-int->bool (%config-get-int (config->pointer config)
+                                       (string->pointer key) v))
+         (bytestructure-ref (pointer->bytestructure v int)))))
 
 (define %config-get-double
   (get-api-funcation
@@ -160,9 +164,10 @@
 (define (config-get-double config key)
   (check-string? key)
   (check-config? config)
-  (let ((v (bytestructure->pointer (bytestructure double))))
-    (%config-get-double (config->pointer config) (string->pointer key) v)
-    (bytestructure-ref (pointer->bytestructure v double))))
+  (let* ((v (bytestructure->pointer (bytestructure double))))
+    (and (c-int->bool (%config-get-double (config->pointer config)
+                                          (string->pointer key) v))
+         (bytestructure-ref (pointer->bytestructure v double)))))
 
 (define %config-get-string
   (get-api-funcation
@@ -170,7 +175,11 @@
    ffi:int
    (list '* '* '* ffi:size_t)))
 
-(define* (config-get-string config key #:optional (value (make-string 30)) (buffer-size (string-length value)))
+;;; XXX: are we need it?
+(define* (config-get-string config key
+                            #:optional
+                            (value (make-string 30))
+                            (buffer-size (string-length value)))
   (check-string? key)
   (check-config? config)
   (let ((s (string->pointer value)))
@@ -193,7 +202,8 @@
   (let ((ptr (%config-get-cstring
               (config->pointer config)
               (string->pointer key))))
-    (pointer->string ptr)))
+    (and (not (null-pointer? ptr))
+         (pointer->string ptr))))
 
 (define %config-update-signature
   (get-api-funcation

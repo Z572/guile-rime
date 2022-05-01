@@ -4,6 +4,11 @@
 
 Guile bindings for Rime.
 
+This a WIP project
+
+- [ ] add more tests
+- [ ] *levers* module
+
 #+begin_src scheme
   (use-modules (rime))
 #+end_src
