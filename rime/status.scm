@@ -52,6 +52,8 @@
   (check-status? status)
   (bytestructure->pointer (status-bytestructure status)))
 
+(set-rime-record-printer! <status> "status" status->point)
+
 (define (status-schema-id status)
   (check-status? status)
   (make-pointer->string (bytestructure-ref

@@ -43,6 +43,8 @@
   (check-context? context)
   (bytestructure->pointer (context-bytestructure context)))
 
+(set-rime-record-printer! <context> "context" context->pointer)
+
 (define (context-composition context)
   (check-context? context)
   (%make-composition (bytestructure-ref (context-bytestructure context) 'composition)))

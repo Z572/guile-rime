@@ -65,6 +65,9 @@
   (check-config? config)
   (bytestructure->pointer (config-bytestructure config)))
 
+(set-rime-record-printer!
+ <config> "config" config->pointer)
+
 (define (pointer->config pointer)
   (%make-config (pointer->bytestructure pointer %config)))
 

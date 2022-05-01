@@ -13,6 +13,8 @@
                                            pointer-address
                                            (int . ffi:int)))
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-9 gnu)
+  #:use-module (ice-9 format)
   #:use-module (rime check)
   #:export
   (bytestructure->pointer
@@ -27,7 +29,8 @@
    false
    c-int->bool
    bool->c-int
-   define-get-api-funcation)
+   define-get-api-funcation
+   set-rime-record-printer!)
   #:export-syntax (check-number?
                    check-pointer?
                    check-string?)
@@ -47,6 +50,9 @@
   number? "This is not number!")
 (define-check check-pointer?
   pointer? "This is not pointer!")
+
+(define-check check-record-type?
+  record-type? "This is not record-type!")
 
 (define bytestructure->pointer
   (compose bytevector->pointer bytestructure-bytevector))
@@ -96,10 +102,13 @@
                     (bytestructure-ref
                      (get-bytestructure-funcation make-api)
                      funcname)) params))))))
-;; (defmacro (define-get-api-funcation name make-api-funcation get-bytestructure-funcation)
-;;   `(define-inlinable (name funcname return params)
-;;      (pointer->procedure
-;;       return (make-pointer
-;;               (bytestructure-ref
-;;                (,get-bytestructure-funcation ,make-api-funcation)
-;;                funcname)) params)))
+
+(define (set-rime-record-printer! record-type new-name to-pointer-procedure)
+  (check-record-type? record-type)
+  (check-string? new-name)
+  (set-record-type-printer!
+   record-type
+   (lambda (record port)
+     (format port "#<rime-~a ~x>"
+             new-name
+             (pointer-address (to-pointer-procedure record))))))

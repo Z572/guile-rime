@@ -48,6 +48,12 @@
   (check-pointer? pointer)
   (pointer->bytestructure pointer %candidate))
 
+(define (candidate->pointer candidate)
+  (check-candidate? candidate)
+  (bytestructure->pointer (candidate-bytestructure candidate)))
+
+(set-rime-record-printer! <candidate> "candidate" candidate->pointer)
+
 (define (candidate-text candidate)
   (check-candidate? candidate)
   (make-pointer->string (bytestructure-ref (candidate-bytestructure candidate) 'text)))

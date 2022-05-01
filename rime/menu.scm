@@ -42,6 +42,8 @@
   (check-menu? menu)
   (bytestructure->pointer (menu-bytestructure menu)))
 
+(set-rime-record-printer! <menu> "menu" menu->pointer)
+
 (define (menu-page-size menu)
   (check-menu? menu)
   (bytestructure-ref (menu-bytestructure menu) 'page-size))
