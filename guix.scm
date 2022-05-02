@@ -22,22 +22,22 @@
                       #:recursive? #t
                       #:select? (git-predicate %srcdir)))
   (build-system gnu-build-system)
-  (arguments `(#:configure-flags
-               (list (string-append "--with-rime-data-dir="
-                                    (assoc-ref %build-inputs "rime-data")
-                                    "/share/rime-data"))
-               #:make-flags '("GUILE_AUTO_COMPILE=0")))
+  (arguments (list #:configure-flags
+                   #~(list (string-append "--with-rime-data-dir="
+                                          #$(this-package-input "rime-data")
+                                          "/share/rime-data"))
+                   #:make-flags
+                   #~(list "GUILE_AUTO_COMPILE=0")))
   (native-inputs
-   `(("autoconf" ,autoconf)
-     ("automake" ,automake)
-     ("pkg-config" ,pkg-config)
-     ("texinfo" ,texinfo)))
-  (inputs `(("guile" ,guile-3.0)
-            ("librime" ,librime)
-            ("rime-data" ,rime-data)))
+   (list autoconf
+         automake
+         pkg-config
+         texinfo
+         ;;; for demo
+         guile-ncurses))
+  (inputs (list guile-3.0 librime rime-data))
   (propagated-inputs
-   `(("guile-bytestructures" ,guile-bytestructures)
-     ("guile-ncurses" ,guile-ncurses)))
+   (list guile-bytestructures))
   (synopsis "")
   (description "")
   (home-page "")
