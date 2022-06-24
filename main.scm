@@ -1,7 +1,7 @@
 #!/usr/bin/env -S guix shell -D --file=guix.scm -- guile --no-auto-compile
 !#
 
-(add-to-load-path (dirname (current-filename)))
+;; (add-to-load-path (dirname (current-filename)))
 (use-modules ;; (rime main)
  (ncurses curses)
  (ncurses menu)
@@ -355,33 +355,37 @@
 (clearok! utils-win #t)
 
                                         ;(sleep 2)
-(while #t
-  (let* ((ch (getch stdscr))
-         (is-esc? (eqv? ch #\esc)))
-    ;; (when (eqv? ch #\dc1)
-    ;;   (clear stdscr)
-    ;;   (refresh stdscr)
-    ;;   (endwin)
-    ;;   (finalize)
-    ;;   (exit 0))
-    (guard (c ((check-error? c)
-               (push! (format #f "~a:~a:~a: ~a: source is `~S'. Value is `~S'.  ~a"
-                              (check-error-file-name c)
-                              (check-error-line c)
-                              (check-error-column c)
-                              (check-error-checker c)
-                              (check-error-source c)
-                              (check-error-value c)
-                              (check-error-message c))
-                      notifications)
-               ;; (raise c)
-               ))
-      (draw-notifications log-win)
-      (r-process-key session-id
-                     (if is-esc? (getch stdscr) ch)
-                     (if is-esc? 8 0))
-      (draw-main session-id ww)
+(dynamic-wind
+  (const #t)
+  (lambda _ (while #t
+              (let* ((ch (getch stdscr))
+                     (is-esc? (eqv? ch #\esc)))
+                ;; (when (eqv? ch #\dc1)
+                ;;   (clear stdscr)
+                ;;   (refresh stdscr)
+                ;;   (endwin)
+                ;;   (finalize)
+                ;;   (exit 0))
+                (guard (c ((check-error? c)
+                           (push! (format #f "~a:~a:~a: ~a: source is `~S'. Value is `~S'.  ~a"
+                                          (check-error-file-name c)
+                                          (check-error-line c)
+                                          (check-error-column c)
+                                          (check-error-checker c)
+                                          (check-error-source c)
+                                          (check-error-value c)
+                                          (check-error-message c))
+                                  notifications)
+                           ;; (raise c)
+                           ))
+                  (draw-notifications log-win)
+                  (r-process-key session-id
+                                 (if is-esc? (getch stdscr) ch)
+                                 (if is-esc? 8 0))
+                  (draw-main session-id ww)
 
-      (draw-info session-id winn)
-      (draw-util session-id utils-win))
-    (doupdate)))
+                  (draw-info session-id winn)
+                  (draw-util session-id utils-win))
+                (doupdate))))
+  (lambda _
+    (endwin)))
