@@ -51,12 +51,8 @@
 
 (define (context-select-labels context)
   (check-context? context)
-  ;; (bytestructure-ref (context-bytestructure context)
-  ;;                    'select-labels)
   (let*  ((select-labels (bytestructure-ref (context-bytestructure context)
-                                            'select-labels))
-          ;; (menu (context-menu context))
-          )
+                                            'select-labels)))
     select-labels
     ;; (if (= 0 select-labels)
     ;;     (menu-select-keys menu)
@@ -73,7 +69,9 @@
 
 (define (context-commit-text-preview context)
   (check-context? context)
-  (make-pointer->string (bytestructure-ref (context-bytestructure context) 'commit-text-preview)))
+  (make-pointer->string
+   (bytestructure-ref (context-bytestructure context)
+                      'commit-text-preview)))
 
 (define %get-context
   (get-api-funcation 'get-context ffi:int (list ffi:uintptr_t '*)))

@@ -33,7 +33,6 @@
             is-maintenance-mode
             join-maintenance-thread
 
-            custom-api-bytestructure
             process-key
             set-notification-handler
             setup
@@ -118,6 +117,7 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
 (define %deploy
   (get-api-funcation
    'deploy ffi:int '()))
+
 (define (deploy)
   (%deploy))
 
