@@ -43,7 +43,9 @@
             get-input
             get-caret-pot
             deployer-initialize
-            run-task))
+            run-task
+            option
+            property))
 
 (define get-api-funcation %guile-rime-get-api-funcation)
 
@@ -178,6 +180,9 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
   (check-string? option)
   (%get-option session-id  (string->pointer option)))
 
+(define option (make-procedure-with-setter get-option set-option))
+
+
 (define %set-property
   (get-api-funcation 'set-property ffi:int (list ffi:uintptr_t '* '*)))
 
@@ -201,6 +206,9 @@ XXX: I don't know why ,sometime set it will let @{}join-maintenance-thread{} fai
                  (string->pointer prop)
                  (string->pointer-address value)
                  buffer-size))
+
+(define property
+  (make-procedure-with-setter get-property set-property))
 
 ;;; testing
 

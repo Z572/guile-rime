@@ -270,7 +270,7 @@
         (conf (user-config-open "user")))
     (select-schema session-id id)
     (config-set-string conf "var/previously_selected_schema" id)
-    (set-option session-id "simplification" #t)
+    (set! (option session-id "simplification") #t)
     (config-close conf)))
 
 (let* ((l (schema-list-list (get-schema-list)))
