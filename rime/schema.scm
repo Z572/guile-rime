@@ -73,7 +73,7 @@
 (define-check check-schema-list?
   schema-list? "This is not a <schema-list> record!")
 
-(define (make-schema-list-bytestructure)
+(define (make-schema-list)
   (%make-schema-list
    (bytestructure %schema-list)))
 
@@ -109,7 +109,7 @@
 (define %get-schema-list
   (get-api-funcation 'get-schema-list ffi:int '(*)))
 
-(define* (get-schema-list #:optional (schema-list (make-schema-list-bytestructure)))
+(define* (get-schema-list #:optional (schema-list (make-schema-list)))
   (check-schema-list? schema-list)
   (%get-schema-list (schema-list->pointer schema-list))
   schema-list)
