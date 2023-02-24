@@ -54,7 +54,9 @@
 (define (setup traits)
   "Call this function before accessing any other rime functions."
   (check-traits? traits)
-  (%setup (traits->pointer traits)))
+  (unless (traits-setuped? traits)
+    (%setup (traits->pointer traits))
+    (set-traits-setuped? traits #t)))
 
 (define %set-notification-handler
   (get-api-funcation 'set-notification-handler void '(* *)))

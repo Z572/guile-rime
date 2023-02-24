@@ -2,6 +2,7 @@
   #:use-module (rime configuration)
   #:use-module (bytestructures guile)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-26)
   #:use-module (rime utils)
   #:export (make-traits
             traits->pointer
@@ -10,7 +11,8 @@
             traits-user-data-dir
             traits-log-dir
             traits-modules
-            )
+            traits-setuped?
+            set-traits-setuped?)
   #:export-syntax
   (check-traits?))
 
@@ -30,9 +32,10 @@
      (staging-dir ,char*))))
 
 (define-record-type <traits>
-  (%make-traits bytestructure)
+  (%make-traits bytestructure setuped?)
   traits?
-  (bytestructure traits-bytestructure))
+  (bytestructure traits-bytestructure)
+  (setuped? traits-setuped? set-traits-setuped?))
 
 (define-check check-traits? traits?
   "This is not a <traits> record!")
@@ -48,7 +51,7 @@
                       min-log-level
                       prebuilt-data-dir
                       staging-dir)
-  (apply struct-init %make-traits %traits
+  (apply struct-init (cut %make-traits <> #f) %traits
          `((shared-data-dir ,(string->pointer-address shared-data-dir))
            ,@(if user-data-dir `((user-data-dir ,(string->pointer-address user-data-dir))) '())
            ,@(if log-dir `((log-dir ,(string->pointer-address log-dir))) '())
