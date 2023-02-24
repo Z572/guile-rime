@@ -19,6 +19,11 @@ m4_pattern_forbid([PKG_CHECK_MODULES])
 PKG_CHECK_MODULES([RIME], [rime >= 1.6.0])
 PKG_CHECK_VAR([RIME_LIBDIR], [rime],[libdir])
 
+PKG_CHECK_MODULES([RIME_1_8],
+    [rime >= 1.8.0],
+    [RIME_1_8_P="#true"],
+    [RIME_1_8_P="#false"])
+AC_SUBST([RIME_1_8_P])
 AS_IF([test "x$RIME_LIBDIR" = "x"], [
   AC_MSG_FAILURE([Unable to identify rime lib path.])
 ])

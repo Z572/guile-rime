@@ -11,10 +11,13 @@
  (gnu packages guile-xyz)
  (gnu packages ibus)
  (gnu packages pkg-config)
- (gnu packages texinfo))
+ (gnu packages texinfo)
+ (guix transformations))
 
 (define %srcdir
   (dirname (current-filename)))
+(define trans (options->transformation
+               '((with-version . "librime=1.8.3"))))
 (package
   (name "guile-rime")
   (version "0.1")
@@ -35,7 +38,9 @@
          texinfo
          ;;; for demo
          guile-ncurses))
-  (inputs (list guile-3.0 librime rime-data))
+  (inputs (list guile-3.0
+                (trans librime)
+                (trans rime-data)))
   (propagated-inputs
    (list guile-bytestructures))
   (synopsis "")

@@ -1,4 +1,5 @@
 (define-module (rime candidate)
+  #:use-module (rime configuration)
   #:use-module (rime api)
   #:use-module (rime utils)
   #:use-module (bytestructures guile)
@@ -161,3 +162,23 @@
    session-id
    (candidate-list-iterator->point iterator)
    index))
+
+(define %delete-candidate
+  (delay (get-api-funcation
+          'delete-candidate
+          ffi:int (list ffi:uintptr_t ffi:size_t))))
+
+(define (delete-candidate session-id index)
+  (c-int->bool ((force %delete-candidate) session-id index)))
+
+(define %delete-candidate-on-current-page
+  (delay (get-api-funcation
+          'delete-candidate-on-current-page
+          ffi:int (list ffi:uintptr_t ffi:size_t))))
+
+(define (delete-candidate-on-current-page session-id index)
+  (c-int->bool ((force %delete-candidate-on-current-page) session-id index)))
+
+(when %guile-rime-1.8?
+  (export delete-candidate
+          delete-candidate-on-current-page))

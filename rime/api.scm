@@ -106,7 +106,13 @@
      (get-staging-dir ,(bs:pointer '*))
      (commit-proto ,(bs:pointer '*))
      (context-proto ,(bs:pointer '*))
-     (status-proto ,(bs:pointer '*)))))
+     (status-proto ,(bs:pointer '*))
+;;; >= 1.8.0
+     ,@(if %guile-rime-1.8?
+           `((get-state-label ,(bs:pointer '*))
+             (delete-candidate ,(bs:pointer '*))
+             (delete-candidate-on-current-page ,(bs:pointer '*)))
+           '()))))
 
 (define-record-type <api>
   (%make-api bytestructure)

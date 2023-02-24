@@ -5,7 +5,8 @@
             %guile-rime-package-name
             %guile-rime-home-page-url
             %guile-rime-bug-report-address
-            %guile-rime-debug-mode?))
+            %guile-rime-debug-mode?
+            %guile-rime-1.8?))
 
 (define %librime
   "@RIME_LIBDIR@/librime")
@@ -27,3 +28,6 @@
 
 (define %guile-rime-debug-mode?
   (make-parameter @DEBUG_MODE@))
+
+(define %guile-rime-1.8?
+  @RIME_1_8_P@)
